@@ -22,6 +22,7 @@
 
 <body class="bg-bone-white">
     <!-- Navigation -->
+    <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
     <nav class="bg-white shadow-sm border-b border-soft-mint sticky top-0 z-50">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between items-center h-16">
@@ -42,30 +43,92 @@
                 </div>
 
                 <div class="flex items-center gap-4">
-                    @auth
-                        <div class="flex items-center gap-3">
-                            <div class="text-right">
-                                <p class="text-sm font-medium" style="color: var(--slate-gray)">{{ Auth::user()->name }}</p>
-                                <p class="text-xs" style="color: var(--slate-gray); opacity: 0.7">{{ Auth::user()->email }}</p>
+                    @php
+                    $email = session('user')['email'] ?? (Auth::check() ? Auth::user()->email : null);
+                    @endphp
+                    
+                    @if($email)
+                    <div
+                        x-data="{ open: false }"
+                        @keydown.escape.window="open = false"
+                        class="relative"
+                    >
+                        <!-- Trigger -->
+                        <button
+                            @click="open = !open"
+                            class="flex items-center gap-2 px-4 py-2 rounded font-medium text-sm focus:outline-none"
+                            style="background-color: var(--teal-ocean); color: var(--bone-white)"
+                            type="button"
+                            aria-haspopup="true"
+                            :aria-expanded="open"
+                        >
+                            <!-- User Icon -->
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                <path d="M16 12a4 4 0 11-8 0 4 4 0 018 0z"/>
+                                <path d="M12 18c-4 0-7 2-7 3v1h14v-1c0-1-3-3-7-3z"/>
+                            </svg>
+                    
+                            <!-- Email (Gmail-style truncation) -->
+                            <span class="max-w-[160px] truncate">
+                                {{ $email }}
+                            </span>
+                    
+                            <!-- Caret -->
+                            <svg class="w-4 h-4 transition-transform duration-200"
+                                :class="{ 'rotate-180': open }"
+                                fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                <path d="M19 9l-7 7-7-7"></path>
+                            </svg>
+                        </button>
+                    
+                        <!-- Dropdown -->
+                        <div
+                            x-cloak
+                            x-show="open"
+                            x-transition.origin.top.right
+                            @click.away="open = false"
+                            class="absolute right-0 mt-2 w-56 bg-white border rounded-lg shadow-lg z-50"
+                            style="display: none"
+                        >
+                            <!-- Header -->
+                            <div class="px-4 py-3 border-b">
+                                <p class="text-sm font-medium text-gray-900 truncate">
+                                    {{ $email }}
+                                </p>
                             </div>
-                            <a href="{{ route('dashboard') }}" class="px-4 py-2 rounded font-medium text-sm" style="background-color: var(--teal-ocean); color: var(--bone-white)">
+                    
+                            <!-- Links -->
+                            <a href="{{ route('dashboard') }}"
+                            class="block px-4 py-2 text-sm hover:bg-teal-50"
+                            style="color: var(--slate-gray)">
                                 Dashboard
                             </a>
-                            <form method="POST" action="{{ route('logout') }}" class="inline">
+                    
+                            <form method="POST" action="{{ route('logout') }}">
                                 @csrf
-                                <button type="submit" class="px-4 py-2 rounded font-medium text-sm" style="background-color: var(--slate-gray); color: var(--bone-white)">
+                                <button
+                                    type="submit"
+                                    class="w-full text-left px-4 py-2 text-sm hover:bg-teal-50"
+                                    style="color: var(--slate-gray)"
+                                >
                                     Logout
                                 </button>
                             </form>
                         </div>
+                    </div>
                     @else
-                        <a href="{{ route('register') }}" class="px-4 py-2 rounded font-medium text-sm" style="background-color: var(--slate-gray); color: var(--bone-white)">
-                            Sign Up
-                        </a>
-                        <a href="{{ route('login') }}" class="px-4 py-2 rounded font-medium text-sm " style="background-color: var(--teal-ocean); color: var(--bone-white)">
-                            Login
-                        </a>
-                    @endauth
+                    <a href="{{ route('register') }}"
+                    class="px-4 py-2 rounded font-medium text-sm"
+                    style="background-color: var(--slate-gray); color: var(--bone-white)">
+                        Sign Up
+                    </a>
+                    <a href="{{ route('login') }}"
+                    class="px-4 py-2 rounded font-medium text-sm"
+                    style="background-color: var(--teal-ocean); color: var(--bone-white)">
+                        Login
+                    </a>
+                    @endif
+                    
                 </div>
             </div>
         </div>
