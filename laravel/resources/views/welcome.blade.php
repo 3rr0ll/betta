@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>BettaMart</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
     <style>
         :root {
             --slate-gray: #1F2A37;
@@ -22,8 +23,7 @@
 
 <body class="bg-bone-white">
     <!-- Navigation -->
-    <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
-    <nav class="bg-white shadow-sm border-b border-soft-mint sticky top-0 z-50">
+    <nav class="bg-white shadow-sm border-b border-soft-mint sticky top-0 z-50" x-data="{ mobileMenu: false }">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between items-center h-16">
                 <!-- Logo -->
@@ -33,8 +33,8 @@
                         <span class="text-xl font-bold" style="color: var(--slate-gray)">BettaMart</span>
                     </a>
                 </div>
-
-                <!-- Menu -->
+                
+                <!-- Desktop Menu -->
                 <div class="hidden md:flex gap-8">
                     <a href="#hero" class="text-sm font-medium nav-link" style="color: var(--slate-gray)">Dashboard</a>
                     <a href="#featured" class="text-sm font-medium nav-link" style="color: var(--slate-gray)">Shop</a>
@@ -42,7 +42,22 @@
                     <a href="#contact" class="text-sm font-medium nav-link" style="color: var(--slate-gray)">Contact</a>
                 </div>
 
-                <div class="flex items-center gap-4">
+                <!-- Mobile menu button -->
+                <div class="md:hidden flex items-center">
+                    <button @click="mobileMenu = !mobileMenu" class="p-2 rounded focus:outline-none" aria-label="Open main menu">
+                        <svg :class="{ 'hidden': mobileMenu, 'inline': !mobileMenu }" class="h-6 w-6 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M4 6h16M4 12h16M4 18h16"></path>
+                        </svg>
+                        <svg :class="{ 'inline': mobileMenu, 'hidden': !mobileMenu }" class="hidden h-6 w-6 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                    </button>
+                </div>
+
+                <!-- Auth Buttons / Profile Dropdown -->
+                <div class="hidden md:flex items-center gap-4">
                     @php
                     $email = session('user')['email'] ?? (Auth::check() ? Auth::user()->email : null);
                     @endphp
@@ -128,7 +143,42 @@
                         Login
                     </a>
                     @endif
-                    
+                </div>
+            </div>
+        </div>
+        <!-- Mobile Menu (Dropdown) -->
+        <div x-show="mobileMenu" x-transition class="md:hidden bg-white border-b border-soft-mint shadow-sm">
+            <div class="flex flex-col px-4 pt-3 pb-4 gap-1">
+                <a href="#hero" class="block py-2 text-base font-medium nav-link" style="color: var(--slate-gray)">Dashboard</a>
+                <a href="#featured" class="block py-2 text-base font-medium nav-link" style="color: var(--slate-gray)">Shop</a>
+                <a href="#about" class="block py-2 text-base font-medium nav-link" style="color: var(--slate-gray)">About</a>
+                <a href="#contact" class="block py-2 text-base font-medium nav-link" style="color: var(--slate-gray)">Contact</a>
+                <div class="flex flex-col gap-1 mt-2">
+                    @if($email)
+                        <span class="block py-2 px-2 text-sm text-gray-500 truncate">{{ $email }}</span>
+                        <a href="{{ route('dashboard') }}" class="block px-2 py-2 text-base font-medium nav-link" style="color: var(--slate-gray)">Dashboard</a>
+                        <form method="POST" action="{{ route('logout') }}">
+                            @csrf
+                            <button
+                                type="submit"
+                                class="w-full text-left px-2 py-2 text-base hover:bg-teal-50"
+                                style="color: var(--slate-gray)"
+                            >
+                                Logout
+                            </button>
+                        </form>
+                    @else
+                        <a href="{{ route('register') }}"
+                        class="block px-2 py-2 rounded font-medium text-base text-center"
+                        style="background-color: var(--slate-gray); color: var(--bone-white)">
+                            Sign Up
+                        </a>
+                        <a href="{{ route('login') }}"
+                        class="block px-2 py-2 rounded font-medium text-base text-center"
+                        style="background-color: var(--teal-ocean); color: var(--bone-white)">
+                            Login
+                        </a>
+                    @endif
                 </div>
             </div>
         </div>
