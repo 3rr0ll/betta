@@ -41,18 +41,31 @@
                     <a href="#contact" class="text-sm font-medium nav-link" style="color: var(--slate-gray)">Contact</a>
                 </div>
 
-                <!-- Cart Icon -->
                 <div class="flex items-center gap-4">
-                    <button class="relative p-2" style="color: var(--teal-ocean)">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z">
-                            </path>
-                        </svg>
-                        <span
-                            class="absolute top-0 right-0 w-5 h-5 rounded-full text-black text-xs flex items-center justify-center font-bold">0</span>
-                    </button>
-                    <a href="/login" class="text-sm font-medium" style="color: var(--slate-gray)">Login</a>
+                    @auth
+                        <div class="flex items-center gap-3">
+                            <div class="text-right">
+                                <p class="text-sm font-medium" style="color: var(--slate-gray)">{{ Auth::user()->name }}</p>
+                                <p class="text-xs" style="color: var(--slate-gray); opacity: 0.7">{{ Auth::user()->email }}</p>
+                            </div>
+                            <a href="{{ route('dashboard') }}" class="px-4 py-2 rounded font-medium text-sm" style="background-color: var(--teal-ocean); color: var(--bone-white)">
+                                Dashboard
+                            </a>
+                            <form method="POST" action="{{ route('logout') }}" class="inline">
+                                @csrf
+                                <button type="submit" class="px-4 py-2 rounded font-medium text-sm" style="background-color: var(--slate-gray); color: var(--bone-white)">
+                                    Logout
+                                </button>
+                            </form>
+                        </div>
+                    @else
+                        <a href="{{ route('register') }}" class="px-4 py-2 rounded font-medium text-sm" style="background-color: var(--slate-gray); color: var(--bone-white)">
+                            Sign Up
+                        </a>
+                        <a href="{{ route('login') }}" class="px-4 py-2 rounded font-medium text-sm " style="background-color: var(--teal-ocean); color: var(--bone-white)">
+                            Login
+                        </a>
+                    @endauth
                 </div>
             </div>
         </div>
